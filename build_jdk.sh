@@ -106,4 +106,4 @@ do_all(){
   create_jdk_archive "${2}/openjdk${1}.tar.gz" ${repoDir}
 }
 
-#do_all $1 $2;
+do_all $1 $2;
