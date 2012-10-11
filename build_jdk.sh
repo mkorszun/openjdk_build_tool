@@ -34,6 +34,7 @@ prepare_env(){
   export ALLOW_DOWNLOADS=true
   export EXTRA_LIBS=/usr/lib/x86_64-linux-gnu/libasound.so
   export DISABLE_HOTSPOT_OS_VERSION_CHECK=ok
+  export ENABLE_FULL_DEBUG_SYMBOLS=0
   source $2/jdk/make/jdk_generic_profile.sh
   echo "===>> Done."
   return 0
@@ -46,7 +47,7 @@ build(){
   
   cd $1 ; make sanity
   if [ $? -ne 0 ]; then echo "Sanity check failed." ; cd ${cwd} ; return 1 ; fi 
-  make 
+  make
   if [ $? -ne 0 ]; then echo "Build failed." ; cd ${cwd} ; return 1 ; fi
   
   cd ${cwd}
@@ -61,8 +62,9 @@ create_jdk_archive(){
 
   jdkDir="${2}/build/$(get_build_dir_name ${2}/build/)/j2sdk-image/"
   if [ ! -d ${jdkDir} ]; then echo "Directory does not exist: ${jdkDir}" ; return 1 ; fi
-  cd ${jdkDir} ; 
-  tar -zcf "${cwd}/${1}" *
+  cd ${jdkDir} ;
+  rm -rf *.diz 
+  tar -zcf "${cwd}/${1}" ASSEMBLY_EXCEPTION LICENSE THIRD_PARTY_README bin include jre lib release
   if [ $? -ne 0 ]; then echo "Archive creation failed." ; cd ${cwd} ; return 1 ; fi
   
   cd ${cwd}
