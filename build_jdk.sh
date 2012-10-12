@@ -46,7 +46,7 @@ build(){
   
   cd $1 ; make sanity
   if [ $? -ne 0 ]; then echo "Sanity check failed." ; cd ${cwd} ; return 1 ; fi 
-  make ENABLE_FULL_DEBUG_SYMBOLS=0
+  make FULL_DEBUG_SYMBOLS=0
   if [ $? -ne 0 ]; then echo "Build failed." ; cd ${cwd} ; return 1 ; fi
   
   cd ${cwd}
@@ -62,10 +62,13 @@ create_jdk_archive(){
   jdkDir="${2}/build/$(get_build_dir_name ${2}/build/)/j2sdk-image/"
   if [ ! -d ${jdkDir} ]; then echo "Directory does not exist: ${jdkDir}" ; return 1 ; fi
   cd ${jdkDir} ;
-  rm -rf jre/lib/amd64/server/libjvm.diz
-  tar -zcf "${cwd}/${1}" ASSEMBLY_EXCEPTION LICENSE THIRD_PARTY_README bin include jre lib release
+  if [ -f release ]; then
+    tar -zcf "${cwd}/${1}" ASSEMBLY_EXCEPTION LICENSE THIRD_PARTY_README bin include jre lib release
+  else
+    tar -zcf "${cwd}/${1}" ASSEMBLY_EXCEPTION LICENSE THIRD_PARTY_README bin include jre lib
+  fi
   if [ $? -ne 0 ]; then echo "Archive creation failed." ; cd ${cwd} ; return 1 ; fi
-  
+
   cd ${cwd}
   echo "===>> Done."
   return 0;
